@@ -102,6 +102,9 @@ int main(int argc, char *argv[]){
     } else if (torch::hasMPS() && result.count("cpu") == 0) {
         std::cout << "Using MPS" << std::endl;
         device = torch::kMPS;
+    }else if(result.count("cpu") == 0){
+        std::cout << "No GPU found, exiting..." << std::endl;
+        return EXIT_FAILURE;
     }else{
         std::cout << "Using CPU" << std::endl;
         displayStep = 1;
