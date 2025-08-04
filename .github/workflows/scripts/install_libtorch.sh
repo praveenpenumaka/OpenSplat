@@ -18,5 +18,5 @@ get_torch_url() {
 get_torch_url $CUDA_VERSION $TORCH_VERSION
 echo $TORCH_URL
 wget -q "$TORCH_URL" -O libtorch.zip
-# unzip libtorch.zip -d /opt
-# rm libtorch.zip
+unzip libtorch.zip -d /opt
+rm libtorch.zip
