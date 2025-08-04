@@ -1,8 +1,9 @@
 
 ARG CUDA_VERSION=12.8.1
-ARG CUDA_ID=cu128
 ARG UBUNTU_VERSION=22.04
 ARG TORCH_VERSION=2.7.1
+ARG CMAKE_BUILD_TYPE=Release
+ARG CMAKE_CUDA_ARCHITECTURES="70;75;80;86;87;89;90;100;101;120"
 
 FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu${UBUNTU_VERSION}
 
@@ -10,6 +11,8 @@ ARG CUDA_VERSION
 ARG CUDA_ID
 ARG UBUNTU_VERSION
 ARG TORCH_VERSION
+ARG CMAKE_BUILD_TYPE
+ARG CMAKE_CUDA_ARCHITECTURES
 
 SHELL ["/bin/bash", "-c"]
 
@@ -22,16 +25,10 @@ WORKDIR /code
 # Copy everything
 COPY . ./
 
+RUN chmod +x .github/workflows/scripts/*
+
 # Upgrade cmake if Ubuntu version is 20.04
-RUN if [[ "$UBUNTU_VERSION" = "20.04" ]]; then \
-        apt-get update && \
-        apt-get install -y ca-certificates gpg wget && \
-        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
-        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
-        apt-get update && \
-        apt-get install kitware-archive-keyring && \
-        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal-rc main' | tee -a /etc/apt/sources.list.d/kitware.list >/dev/null; \
-    fi
+RUN sh .github/workflows/scripts/upgrade_cmake.sh ${UBUNTU_VERSION}
 
 # Install build dependencies
 RUN apt-get update && \
@@ -49,21 +46,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and install LibTorch
-ARG TORCH_URL=https://download.pytorch.org/libtorch/${CUDA_ID}/libtorch-cxx11-abi-shared-with-deps-${TORCH_VERSION}%2B${CUDA_ID}.zip
-
-RUN echo ${TORCH_URL} > /tmp/torch.txt
-RUN cat /tmp/torch.txt
-RUN wget -q "$TORCH_URL" -O libtorch.zip
-RUN unzip libtorch.zip -d /opt
-RUN rm libtorch.zip
-
-#ENV Torch_DIR=/opt/libtorch/share/cmake/Torch
-#ENV LD_LIBRARY_PATH=/opt/libtorch/lib:$LD_LIBRARY_PATH
-#ENV PATH=/opt/libtorch/bin:$PATH
-
+RUN sh .github/workflows/scripts/install_libtorch.sh ${CUDA_VERSION} ${TORCH_VERSION}
 
 # Configure and build \
-RUN source .github/workflows/cuda/Linux-env.sh cu"${CUDA_VERSION%%.*}"$(echo $CUDA_VERS#ION | cut -d'.' -f2) && \
+RUN source .github/workflows/scripts/set_cuda_paths.sh ${CUDA_VERSION} && \
     mkdir build && \
     cd build && \
     cmake .. \

@@ -1,0 +1,11 @@
+# $1 = 12.8.1 --> 12.8
+CUDA_VERSION=$1
+CUDA_SMALLER_VERSION=$(echo $CUDA_VERSION | cut -d'.' -f1-2)
+
+export CUDA_HOME=/usr/local/cuda-${CUDA_SMALLER_VERSION}
+export LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+export PATH=${CUDA_HOME}/bin:${PATH}
+
+echo "CUDA_HOME: ${CUDA_HOME}"
+echo "LD_LIBRARY_PATH: ${LD_LIBRARY_PATH}"
+echo "PATH: ${PATH}"
