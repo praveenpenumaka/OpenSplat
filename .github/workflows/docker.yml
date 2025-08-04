@@ -19,8 +19,8 @@ jobs:
         os: [ubuntu-22.04] # [ubuntu-22.04, ubuntu-20.04, ubuntu-18.04]
         arch: [x64] # [x64, x86]
         ubuntu-version: [22.04, 20.04] # [18.04, 20.04, 22.04]
-        torch-version: [2.3.1, 2.7.1] # [1.12.0, 1.13.0, 2.0.0, 2.1.0, 2.1.1, 2.1.2, 2.2.0, 2.2.1]
-        cuda-version: [11.8.0, 12.0.0, 12.5.1, 12.8.1]
+        torch-version: [2.7.1] # [1.12.0, 1.13.0, 2.0.0, 2.1.0, 2.1.1, 2.1.2, 2.2.0, 2.2.1]
+        cuda-version: [11.8.0, 12.8.1]
         cmake-build-type: [Release] # [Debug, ClangTidy]
     steps:
       - name: Checkout Repository
