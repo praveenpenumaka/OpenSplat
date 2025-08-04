@@ -3,9 +3,9 @@ TORCH_VERSION=$2
 
 get_cuda_id() {
     # Remove the last digit from the cuda_version
-    CUDA_SMALLER_VERSION=${CUDA_VERSION%?}
+    CUDA_SMALLER_VERSION=$(echo $CUDA_VERSION | cut -d'.' -f1-2)
     # Remove the . from the cuda_version
-    CUDA_SMALLER_VERSION=${CUDA_SMALLER_VERSION//./}
+    CUDA_SMALLER_VERSION=$(echo $CUDA_SMALLER_VERSION | sed 's/\.//g')
     # Add the cu prefix
     CUDA_ID="cu$CUDA_SMALLER_VERSION"
 }
